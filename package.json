@@ -1,17 +1,19 @@
 {
   "name": "classify-my-files",
   "version": "1.0.0",
-  "description": "",
-  "main": "prac-ffmpeg.js",
+  "main": "classify-my-files.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "MXXXXXS",
+  "license": "MIT",
   "dependencies": {
-    "exif": "^0.6.0",
-    "exif-parser": "^0.1.12",
-    "fluent-ffmpeg": "^2.1.2"
-  }
+    "dist-exiftool": "^10.53.0",
+    "exif-date": "^2.0.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "node-exiftool": "^2.3.0"
+  },
+  "devDependencies": {},
+  "description": ""
 }
