@@ -1,49 +1,74 @@
-//通用模块加载
-let fs = require('fs'),
+const fs = require('fs'),
+    fsPromises = require('fs').promises,
+    exif = require('./get-exif.js'),
+    fr = require('./file-recursion.js'),
     path = require('path')
+//转换exif时间为Date对象
+const { parse } = require('exif-date')
 //读取配置文件
 let Config = fs.readFileSync('./CMFConfig.json', 'utf8')
 if (!Config) throw 'read CMFConfig.json failed!'
 let CMFConfig = JSON.parse(Config),
-    { source, destination, ffpath } = CMFConfig
-//初始化fluent-ffmpeg
-let ffmpeg = require('fluent-ffmpeg'),
-    command = ffmpeg()
-command.setFfmpegPath(ffpath + '/ffmpeg.exe')
-command.setFfprobePath(ffpath + '/ffprobe.exe')
-// 初始化exif
-let ExifImage = require('exif').ExifImage
+    { source, destination, regex } = CMFConfig
 
-//处理视频
-function getVideoMeta(video) {
-    ffmpeg.ffprobe(video, function (err, metadata) {
-        if (err)
-            throw 'ffprobe fn err:\n' + err
-        handleVMeta(metadata)
-    })
-}
-function handleVMeta(meta) {
-    fs.writeFile(destination + '/meta.json', JSON.stringify(meta, null, 2), (err) => {
-        if (err)
-            throw 'ffprobe fn writeFile err:\n' + err
-    })
+let openedEP = exif.openExif(),//启动exiftool
+    fArr = fr.getFilesArr(source),//获得文件列表
+    pArr = []//存放fArr.forEach产生的promise
 
-}
-// getVideoMeta('D:/UW/视频/手机视频存储/2018_3_3/IMG_20170628_205702.jpg')
+fArr.forEach(fPath => {
+    pArr.push(
+        Promise
+            .all([
+                exif.getDate(openedEP, fPath, (metadata) => {
+                    if (metadata.data[0].CreateDate) return parse(metadata.data[0].CreateDate)
+                }),
+                // new Promise(function (res, rej) {
+                //     //正则分析文件名蕴含的日期
+                // }),
+                fsPromises
+                    .stat(fPath)
+                    .then(stats => {
+                        return new Date(
+                            Math.min(...[
+                                stats.birthtime.valueOf(),
+                                stats.mtime.valueOf(),
+                                stats.ctime.valueOf()
+                            ])
+                        )
+                    })
+            ])//三组日期选出最早的日期
+            .then((dArr) => {
+                console.log(dArr)
+                if (!dArr[0]) dArr.shift()
+                // if(!(dArr[0] instanceof Date)) dArr.shift()
+                return { fname: fPath, fdate: new Date((Math.min(...dArr.valueOf()))) }
+            })
+            .catch(console.error)
+    )
+})
 
-//处理图片
-function getImgMeta(img) {
-    try {
-        new ExifImage({image : img}, function (e, exifData) {
-            if (e) {
-                throw e
-            }
-            return exifData
+Promise
+    .all(pArr)
+    .then((fcooked) => {
+        exif.closeExif(openedEP)//关闭exiftool
+        console.log('files info read finished!\nnow start classifying...')
+        console.log(JSON.stringify(fcooked, null, 2))
+        fcooked.forEach(file => {
+            let dest = `${file.fdate.getFullYear()}`,
+                indest = `${file.fdate.getMonth() + 1}`
+            fsPromises
+                .mkdir(`${destination}/${dest}`)
+                .catch(() => undefined)
+                .finally(() => {
+                    fsPromises
+                        .mkdir(`${destination}/${dest}/${indest}`)
+                        .catch(() => undefined)
+                        .finally(() => {
+                            fsPromises
+                                .copyFile(file.fname, `${destination}/${dest}/${indest}/${path.basename(file.fname)}`)
+                                .catch(console.error)
+                        })
+                })
         })
-    } catch (error) {
-        throw error
-    }
-}
-let exifData = getImgMeta('D:/UW/图片/晚/IMG_20160829_184138.jpg')
-console.log(JSON.stringify(exifData, null, 2))
-//TODO:遍历目录, 解决文件名的问题
+    }, console.error)
+    .catch(console.error)

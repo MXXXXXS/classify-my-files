@@ -1,5 +1,5 @@
 {
-    "source": "",
+    "source": "D:/UW/图片/pixiv",
     "destination": "./destination",
-    "ffpath": "E:/Jsoftware/ffmpeg-4.0-win64-static/bin"
+    "regex": ""
 }
