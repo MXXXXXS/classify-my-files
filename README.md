@@ -1,4 +1,5 @@
 ####用来对图片, 视频或一般文件进行分类整理
+
 #####需要node v10环境
 
 分类效果: 以年份作为文件名分成不同文件夹, 每个年份文件夹内, 以月份作为文件名分成不同文件夹, 以存放对应时间的文件
@@ -28,6 +29,7 @@
 ######细节仍在改进中...
 
 ####Used to classify pictures, videos, or general files
+
 #####Node V10 environment required
 
 Classification result: Creating different folders which named with year.In each folder creating different folders which named with month, containing the files corresponding to the date.
