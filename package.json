@@ -1,19 +1,25 @@
 {
   "name": "classify-my-files",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "classify-my-files.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MXXXXXS/classify-my-files"
+  },
   "keywords": [],
-  "author": "MXXXXXS",
+  "author": "MXXXXXS<relife_abyss@qq.com>",
   "license": "MIT",
   "dependencies": {
     "dist-exiftool": "^10.53.0",
     "exif-date": "^2.0.1",
-    "fluent-ffmpeg": "^2.1.2",
     "node-exiftool": "^2.3.0"
   },
   "devDependencies": {},
-  "description": ""
+  "description": "",
+  "bin": {
+    "cmf": "./classify-my-files.js"
+  }
 }
