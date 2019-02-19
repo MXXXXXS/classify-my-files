@@ -1,6 +1,8 @@
-#### 用来对图片, 视频或一般文件进行分类整理
+# 想用来整理回忆
 
-##### 需要node v10环境
+## 用来对图片, 视频或一般文件进行分类整理
+
+### 新功能: 增加了进度条 [==========] 100%
 
 分类效果: 以年份作为文件名分成不同文件夹, 每个年份文件夹内, 以月份作为文件名分成不同文件夹, 以存放对应时间的文件
 
@@ -10,52 +12,44 @@
 
     {
     "source": "",
-    "destination": ""
+    "destination": "",
+    "deep": true
     }
 
-填入原文件夹, 目标文件夹路径
+### *若是windows系统, 请将路径分隔符'\\'全部替换成斜杠'/'*
 
-**若是windows系统, 请将路径分隔符'\\'全部替换成斜杠'/'**
-
-* 第一项"source"为所需整理的文件夹
-* 第二项"destination"为整理的目标文件夹, 因为是以复制的形式整理的, 不会改变原文件
+* 第一项"source"为所需整理的文件夹.
+* 第二项"destination"为存放整理文件的, 因为是以复制的形式整理的, 不会改变原文件.
+* 第三项"deep"控制是否递归遍历源文件夹的子文件夹. 要遍历子文件夹设为: **true**, 否则设为**false**
 
 然后终端输入
 
-    npx cmf
-
-等待程序复制整理完成, 目前尚没有进度条功能, 请耐心等待❤
-
-###### 细节仍在改进中...
+    npm start
 
 ***
 
-#### Used to classify pictures, videos, or general files
+## Used to classify pictures, videos, or general files
 
-##### Node V10 environment required
+### New feature: progress bar added [==========] 100%
 
-Classification result: Creating different folders which named with year.In each folder creating different folders which named with month, containing the files corresponding to the date.
+Classification rules: Creating different folders named with year.In each year folder creating different folders named with month, storing the files corresponding to the date.
 
 Usage:
 
-Create a new configuration file in the current folder: **CMFConfig.json**, copy this into the json file:
+Create a configuration file in the current folder: **CMFConfig.json**, write like this:
 
     {
     "source": "",
-    "destination": ""
+    "destination": "",
+    "deep": true
     }
 
-Fill in the path of the "source folder" and "destination folder"
+### *On Windows, replace the path separator '\\' all with a slash '/'*
 
-**If you are a Windows system, replace the path separator '\\' all with a slash '/'**
+* The first item  "Source" is the folder you want to classify.
+* The second item  "Destination" is where to store the classified files. Files are classified by copying, it will not modify the original files.
+* The third item "deep" controls if the child folders in source should be traversed. Set it **true** to traverse all child folders, or set it **false**.
 
-* The first item  "Source" is the folder you want to classify
-* The second item  "Destination" is the target folder to store the classified files. Because files are classified by copying, it will not modify the original files
+Use it in the terminal:
 
-Then use it in the terminal:
-
-    npx cmf
-
-Wait for the program to copy and finish, there is no progress bar yet, please be patient❤
-
-##### Details are still being improved...
+    npm start
