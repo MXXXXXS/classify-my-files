@@ -1,0 +1,25 @@
+{
+  "name": "classify-my-files",
+  "version": "1.1.1",
+  "main": "classify-my-files.js",
+  "scripts": {
+    "start": "node classify-my-files.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MXXXXXS/classify-my-files"
+  },
+  "keywords": [],
+  "author": "MXXXXXS<relife_abyss@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dist-exiftool": "^10.53.0",
+    "node-exiftool": "^2.3.0",
+    "progress": "^2.0.3"
+  },
+  "devDependencies": {},
+  "description": "",
+  "bin": {
+    "cmf": "./classify-my-files.js"
+  }
+}
