@@ -1,6 +1,0 @@
-const exiftool = require('node-exiftool')
-const exiftoolBin = require('dist-exiftool')
-const ep = new exiftool.ExiftoolProcess(exiftoolBin)
-exports.openExif = () => ep.open()
-exports.getDate = (path) => ep.readMetadata(path, ['charset filename=utf8', 'CreateDate'])
-exports.closeExif = () => ep.close()

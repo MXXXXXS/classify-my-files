@@ -20,6 +20,4 @@ let collectFiles = dir => {
   return filesCollection
 }
 
-
-// console.log(collectFiles('D:/UW/图片/中世纪的欧洲建筑图赏 _都铎风格'))
 module.exports = collectFiles

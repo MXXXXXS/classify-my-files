@@ -18,8 +18,5 @@
     "progress": "^2.0.3"
   },
   "devDependencies": {},
-  "description": "",
-  "bin": {
-    "cmf": "classify-my-files.js"
-  }
+  "description": ""
 }
