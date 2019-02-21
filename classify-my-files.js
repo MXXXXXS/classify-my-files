@@ -11,7 +11,7 @@ const ProgressBar = require('progress')
 const tryParseDate = require('./tryToParseDateFromString.js')
 const collectFiles = require('./collectFiles.js')
 
-const CMFconfig = path.resolve(__dirname, '../../CMFconfig.json')
+const CMFConfig = path.resolve(__dirname, '../../CMFConfig.json')
 
 let config
 
@@ -25,7 +25,7 @@ function readFile(file) {
 }
 
 async function trigger() {
-  config = await readFile(CMFconfig).catch(() => console.error('x Cannot find CMFconfig.json'))
+  config = await readFile(CMFConfig).catch(() => console.error('x Cannot find CMFConfig.json'))
     .then(data => {
       return JSON.parse(data)
     })
