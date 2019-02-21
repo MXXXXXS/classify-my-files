@@ -4,11 +4,13 @@
 
 ### 新功能: 增加了进度条 [==========] 100%
 
-分类效果: 以年份作为文件名分成不同文件夹, 每个年份文件夹内, 以月份作为文件名分成不同文件夹, 以存放对应时间的文件
+分类效果: 以年份作为文件名分成不同文件夹, 每个年份文件夹内, 以月份作为文件名分成不同文件夹, 以存放对应时间的文件.
 
 使用方法:
 
-在当前文件夹新建配置文件:**CMFConfig.json**, 填入:
+在当前文件夹新建配置文件:**CMFConfig.json**, **必须为UTF-8编码**.
+
+填入:
 
     {
     "source": "",
@@ -22,7 +24,7 @@
 * 第二项"destination"为存放整理文件的, 因为是以复制的形式整理的, 不会改变原文件.
 * 第三项"deep"控制是否递归遍历源文件夹的子文件夹. 要遍历子文件夹设为: **true**, 否则设为**false**
 
-然后终端输入
+然后终端输入:
 
     npx cmf
 
@@ -36,7 +38,9 @@ Classification rules: Creating different folders named with year.In each year fo
 
 Usage:
 
-Create a configuration file in the current folder: **CMFConfig.json**, write like this:
+Create a configuration file in the current folder: **CMFConfig.json**, **must be utf-8 encoded**.
+
+Write like this:
 
     {
     "source": "",
