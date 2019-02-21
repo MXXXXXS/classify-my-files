@@ -111,7 +111,6 @@ async function exif(files) {
       bar.tick()
       if (files.hasOwnProperty(file)) {
         let info = await readMetadata(file, ['ModifyDate', 'CreateDate', 'DateCreated', 'charset filename=utf8'])
-        console.log(info)
         if (info) {
           let item = info.data[0]
           let mtimes = []
