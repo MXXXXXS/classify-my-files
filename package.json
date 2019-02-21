@@ -1,6 +1,6 @@
 {
   "name": "classify-my-files",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "classify-my-files.js",
   "scripts": {
     "start": "node classify-my-files.js"
@@ -18,5 +18,8 @@
     "progress": "^2.0.3"
   },
   "devDependencies": {},
-  "description": ""
+  "description": "",
+  "bin": {
+    "cmf": "./classify-my-files.js"
+  }
 }

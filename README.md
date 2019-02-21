@@ -24,7 +24,7 @@
 
 然后终端输入
 
-    npm start
+    npx cmf
 
 ***
 
@@ -52,4 +52,4 @@ Create a configuration file in the current folder: **CMFConfig.json**, write lik
 
 Use it in the terminal:
 
-    npm start
+    npx cmf

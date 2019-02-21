@@ -1,5 +1,8 @@
 #! /usr/bin/env node
 
+const fs = require('fs')
+const path = require('path')
+
 const exiftool = require('node-exiftool')
 const exiftoolBin = require('dist-exiftool')
 const ep = new exiftool.ExiftoolProcess(exiftoolBin)
@@ -8,8 +11,7 @@ const ProgressBar = require('progress')
 const tryParseDate = require('./tryToParseDateFromString.js')
 const collectFiles = require('./collectFiles.js')
 
-const fs = require('fs')
-const path = require('path')
+const CMFconfig = path.resolve(__dirname, '../../CMFconfig.json')
 
 let config
 
@@ -23,7 +25,7 @@ function readFile(file) {
 }
 
 async function trigger() {
-  config = await readFile(path.resolve(__dirname, './CMFConfig.json'))
+  config = await readFile(CMFconfig).catch(() => console.error('x Cannot find CMFconfig.json'))
     .then(data => {
       return JSON.parse(data)
     })
