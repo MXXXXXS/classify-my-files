@@ -1,6 +1,6 @@
 {
   "name": "classify-my-files",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "main": "classify-my-files.js",
   "scripts": {
     "start": "node classify-my-files.js"
