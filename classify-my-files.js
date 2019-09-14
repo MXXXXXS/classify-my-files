@@ -3,148 +3,77 @@
 const fs = require('fs')
 const path = require('path')
 
+const program = require(`commander`)
+const progressBar = require(`progress`)
 const exiftool = require('node-exiftool')
 const exiftoolBin = require('dist-exiftool')
 const ep = new exiftool.ExiftoolProcess(exiftoolBin)
-const ProgressBar = require('progress')
 
-const tryParseDate = require('./tryToParseDateFromString.js')
-const collectFiles = require('./collectFiles.js')
+const { saveTo, parseDateFrom, earliest, traverseFiles } = require(`./utils`)
 
-const CMFConfig = path.resolve(__dirname, '../../CMFConfig.json')
+program
+  .option(`-S, --source <path>`, `source folder`)
+  .option(`-D, --destination <path>`, `destination folder`)
+  .option(`-m, --mode <link | copy | symlink>`, `create symlinks, links or copies of source files`, `link`)
+  .option(`-d, --deep <true | false>`, `whether or not traverse source folder recursively`, true)
 
-let config
+program.parse(process.argv)
 
-function readFile(file) {
-  return new Promise((res, rej) => {
-    fs.readFile(file, 'utf8', (err, data) => {
-      if (err) rej(err)
-      res(data)
-    })
-  }).catch(err => console.error(`× Failed to read file: ${file}\n  Error: ${err}`))
-}
-
-async function trigger() {
-  config = await readFile(CMFConfig).catch(() => console.error('x Cannot find CMFConfig.json'))
-    .then(data => {
-      return JSON.parse(data)
-    })
-  if (config) {
-    if (fs.existsSync(config.source) &&
-      fs.existsSync(config.destination) &&
-      typeof config.deep === 'boolean') {
-      console.log('√ Configuration loaded')
-      console.log('√ Start collecting files')
-      let files = collectFiles(config.source, config.deep)
-      console.log('√ Files collected')
-      console.time('Time used: ')
-      exif(files)
-    } else {
-      console.error(`x Something wrong with your config, please cheack it.
-        It should be like this:
-        {
-          "source": "[Full path]",  //The full path of the source dir you want to classify.
-          "destination": "[Full path]",  //The full path of the destination dir where you want to store the classified files. If the dir didn't exit, please create one.
-          "deep": [boolean]  //If you want to classify the dir recursively, set it: true, or set it: false.
-      }`)
-    }
-  }
-}
-
-async function exif(files) {
-  await ep.open().then(() => {
-    console.log('√ Exiftool opened')
-  }).catch(() => {
-    throw '× Exiftool start failed'
+if (program.source && program.destination) {
+  trigger({
+    source: path.resolve(program.source),
+    destination: path.resolve(program.destination),
+    mode: program.mode,
+    deep: program.deep
   })
-  let mfiles = await earliest(files).catch(err => console.error(err))
-  await ep.close()
-    .then(() => {
-      console.log('√ Exiftool closed')
+}
+
+async function trigger(config) {
+  let counter = 0
+  await ep.open()
+  traverseFiles(config.source, async (p, stats) => {
+    ++counter
+    const dates = []
+    const info = await ep.readMetadata(p, ['ModifyDate', 'CreateDate', 'DateCreated', 'charset filename=utf8'])
+
+    //date from file stats
+    dates.push(stats.mtime)
+
+    //date from exif
+    if (info) {
+      const item = info.data[0]
+      let time
+      if (item['ModifyDate']) {
+        time = parseDateFrom(item.ModifyDate.slice(0, 10))
+      } else if (item['CreateDate']) {
+        time = parseDateFrom(item.CreateDate.slice(0, 10))
+      } else if (item['DateCreated']) {
+        time = parseDateFrom(item.DateCreated.slice(0, 10))
+      }
+      if (time) dates.push(time)
+    }
+
+    //date from file name
+    const time = parseDateFrom(path.basename(p))
+    if (time) dates.push(time)
+
+    const earliestDate = earliest(...dates)
+    const savePosition = path.resolve(
+      config.destination,
+      String(earliestDate.getFullYear()),
+      String(earliestDate.getMonth() + 1),
+      path.basename(p))
+
+    //save file copy or link to destination
+    saveTo(config.mode, p, savePosition)
+    .then((err) => {
+      --counter
+      if (counter === 0) ep.close()
     })
     .catch(err => {
       console.error(err)
+      --counter
+      if (counter === 0) ep.close()
     })
-
-  classify(mfiles, config.destination)
-  console.timeEnd('Time used: ')
-
-  function classify(files, dest) {
-    const bar = new ProgressBar('Classifying the files [:bar] :percent :etas', {
-      total: Object.keys(files).length,
-      width: 40
-    })
-    for (const file in files) {
-      if (files.hasOwnProperty(file)) {
-        const ms = files[file];
-        let date = new Date(ms)
-        let month = date.getMonth() + 1
-        let year = date.getFullYear()
-        if (!fs.existsSync(path.resolve(dest, year.toString()))) {
-          fs.mkdirSync(path.resolve(dest, year.toString()))
-        } else if (!fs.statSync(path.resolve(dest, year.toString())).isDirectory()) {
-          fs.mkdirSync(path.resolve(dest, year.toString()))
-        }
-        if (!fs.existsSync(path.resolve(dest, year.toString(), month.toString()))) {
-          fs.mkdirSync(path.resolve(dest, year.toString(), month.toString()))
-        } else if (!fs.statSync(path.resolve(dest, year.toString(), month.toString())).isDirectory()) {
-          fs.mkdirSync(path.resolve(dest, year.toString(), month.toString()))
-        }
-        fs.copyFileSync(file, path.resolve(dest, year.toString(), month.toString(), path.basename(file)))
-        bar.tick()
-      }
-    }
-  }
-
-  async function readMetadata(file, option) {
-    return ep.readMetadata(file, option).catch(() => {
-      console.error(`x Failed to read meta data from: ${file}`)
-    })
-  }
-
-  async function earliest(files) {
-    const bar = new ProgressBar('Parsing the earliest date [:bar] :percent :etas', {
-      total: Object.keys(files).length,
-      width: 40
-    })
-    for (const file in files) {
-      bar.tick()
-      if (files.hasOwnProperty(file)) {
-        let info = await readMetadata(file, ['ModifyDate', 'CreateDate', 'DateCreated', 'charset filename=utf8'])
-        if (info) {
-          let item = info.data[0]
-          let mtimes = []
-          let ftime = tryParseDate(path.basename(file))
-          if (item.hasOwnProperty('ModifyDate')) {
-            let time = tryParseDate(item.ModifyDate.slice(0, 10))
-            if (time) mtimes.push(time.getTime())
-          }
-          if (item.hasOwnProperty('CreateDate')) {
-            let time = tryParseDate(item.CreateDate.slice(0, 10))
-            if (time) mtimes.push(time.getTime())
-          }
-          if (item.hasOwnProperty('DateCreated')) {
-            let time = tryParseDate(item.DateCreated.slice(0, 10))
-            if (time) mtimes.push(time.getTime())
-          }
-          if (mtimes.length != 0) {
-            if (ftime) {
-              files[path.normalize(item.SourceFile)] = Math.min(files[path.normalize(item.SourceFile)], ftime, ...mtimes)
-            } else {
-              files[path.normalize(item.SourceFile)] = Math.min(files[path.normalize(item.SourceFile)], ...mtimes)
-            }
-          } else if (ftime) {
-              files[path.normalize(item.SourceFile)] = Math.min(files[path.normalize(item.SourceFile)], ftime)
-          }
-        }
-        let ftime = tryParseDate(path.basename(file))
-        if (ftime) {
-          files[file] = Math.min(files[file], ftime)
-        }
-      }
-    }
-    return files
-  }
+  }, config.deep)
 }
-
-trigger()

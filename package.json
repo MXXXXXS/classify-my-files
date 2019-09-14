@@ -3,7 +3,8 @@
   "version": "1.2.5",
   "main": "classify-my-files.js",
   "scripts": {
-    "start": "node classify-my-files.js"
+    "test": "mocha",
+    "testCMF": "node classify-my-files -S ./test/assets/from -D ./test/assets/to -m link"
   },
   "repository": {
     "type": "git",
@@ -13,11 +14,16 @@
   "author": "MXXXXXS<relife_abyss@qq.com>",
   "license": "MIT",
   "dependencies": {
+    "commander": "^3.0.1",
     "dist-exiftool": "^10.53.0",
     "node-exiftool": "^2.3.0",
     "progress": "^2.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "gulp": "^4.0.2",
+    "mocha": "^6.2.0"
+  },
   "description": "",
   "bin": {
     "cmf": "./classify-my-files.js"

@@ -1,59 +1,21 @@
-# 想用来整理回忆
+# 照片整理工具
 
-## 用来对图片, 视频或一般文件进行分类整理
+## 用来按时间整理照片
 
-### 新功能: 增加了进度条 [==========] 100%
+整理效果:
 
-分类效果: 以年份作为文件名分成不同文件夹, 每个年份文件夹内, 以月份作为文件名分成不同文件夹, 以存放对应时间的文件.
+如有一张日期为2019:09:13的照片, 目标文件夹为当前目录, 这张照片会被复制并存放到"./2019/9/13"文件夹下
 
 使用方法:
 
-在当前文件夹新建配置文件:**CMFConfig.json**, **必须为UTF-8编码**.
+    npx cmf -S <path> -D <path>
 
-填入:
+选项:
 
-    {
-    "source": "",
-    "destination": "",
-    "deep": true
-    }
+    -S, --source <path>                 source folder
+    -D, --destination <path>            destination folder
+    -m, --mode <link | copy | symlink>  create symlinks, links or copies of source files (default: "link")
+    -d, --deep <true | false>           whether or not traverse source folder recursively (default: true)
+    -h, --help                          output usage information
 
-### *若是windows系统, 请将路径分隔符'\\'全部替换成斜杠'/'*
-
-* 第一项"source"为所需整理的文件夹.
-* 第二项"destination"为存放整理文件的, 因为是以复制的形式整理的, 不会改变原文件.
-* 第三项"deep"控制是否递归遍历源文件夹的子文件夹. 要遍历子文件夹设为: **true**, 否则设为**false**
-
-然后终端输入:
-
-    npx cmf
-
-***
-
-## Used to classify pictures, videos, or general files
-
-### New feature: progress bar added [==========] 100%
-
-Classification rules: Creating different folders named with year.In each year folder creating different folders named with month, storing the files corresponding to the date.
-
-Usage:
-
-Create a configuration file in the current folder: **CMFConfig.json**, **must be utf-8 encoded**.
-
-Write like this:
-
-    {
-    "source": "",
-    "destination": "",
-    "deep": true
-    }
-
-### *On Windows, replace the path separator '\\' all with a slash '/'*
-
-* The first item  "Source" is the folder you want to classify.
-* The second item  "Destination" is where to store the classified files. Files are classified by copying, it will not modify the original files.
-* The third item "deep" controls if the child folders in source should be traversed. Set it **true** to traverse all child folders, or set it **false**.
-
-Use it in the terminal:
-
-    npx cmf
+### *在window系统上, "mode: symlink"需要管理员权限或运行在"开发者模式"下*
