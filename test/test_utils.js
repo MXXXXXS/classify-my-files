@@ -9,8 +9,8 @@ const fs = require(`fs`)
 
 describe(`#saveTo()`, function () {
   const modes = [`copy`, `link`, `symlink`]
-  const src = `${__dirname}/assets/from/39393510_p0.jpg`
-  const dest = `${__dirname}/assets/to/laryer0/laryer1/39393510_p0.jpg`
+  const src = `${__dirname}/assets/from/testFile.txt`
+  const dest = `${__dirname}/assets/to/laryer0/laryer1/testFile.txt`
   it(`写入文件到路径:${dest}`, async function () {
     for (let i = 0; i < modes.length; i++) {
       const mode = modes[i];
