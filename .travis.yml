@@ -13,3 +13,4 @@ deploy:
   on:
     tags: true
     repo: MXXXXXS/classify-my-files
+    brach: master
